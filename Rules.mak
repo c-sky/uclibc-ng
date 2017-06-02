@@ -453,6 +453,19 @@ ifeq ($(TARGET_ARCH),cris)
 	PIEFLAG_NAME:=-fpie
 endif
 
+ifeq ($(TARGET_ARCH),csky)
+	CPU_CFLAGS-y		+= -mstm
+
+	CPU_CFLAGS-$(CK610)	+= -mcpu=ck610f
+	CPU_CFLAGS-$(CK810)	+= -mcpu=ck810f
+	CPU_CFLAGS-$(CK807)	+= -mcpu=ck807f
+
+	CPU_CFLAGS-$(UCLIBC_HAS_FPU)		+= -mhard-float
+
+	CPU_CFLAGS-$(ARCH_LITTLE_ENDIAN)	+= -mlittle-endian
+	CPU_CFLAGS-$(ARCH_BIG_ENDIAN)		+= -mbig-endian
+endif
+
 ifeq ($(TARGET_ARCH),m68k)
 	# -fPIC is only supported for 68020 and above.  It is not supported
 	# for 68000, 68010, or Coldfire.

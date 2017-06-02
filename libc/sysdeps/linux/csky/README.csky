@@ -1,0 +1,56 @@
+
+README for uC-libc on the csky[nommu] architecture
+
+James Graves <jgraves@deltamobile.com>
+
+For now (2001/1/9) support for the csky should be considered "alpha"
+quality at best.  It mostly works OK for some of the stuff I'm working
+on, but you can't fully compile other things (like the user
+applications for uClinux).  Needs lots more testing.
+
+Only developed/tested with csky-pic-coff-gcc 2.7.2.3-pic-060999, from
+Lineo.
+
+Configuration:
+
+	Read and edit the Config file, carefully.
+
+	TARGET_ARCH=csky
+	CROSS = csky-linux-
+	CC = $(CROSS)gcc
+	STRIPTOOL = $(CROSS)strip
+	KERNEL_SOURCE=
+	HAS_MMU = true
+	HAS_FLOATS = false
+	MALLOC = malloc-simple
+	INSTALL_DIR = 
+
+	The regular malloc library is broken, dunno why.  Use
+	simple-malloc.
+
+Installation:
+	Theoretically, you should be able to install right over the
+	existing uC-libc 0.9.1 files in
+	/opt/uClinux/csky-pic-coff/include, but I recommend cleaning
+	out all the include files there.  
+
+	The only file in there that's not from the old uC-libc is
+	assert.h, but I don't know why that would be the valid copy.
+
+	run:
+		make install
+
+Problems:
+
+	I _may_ be able to help if you run into problems.  Create a
+	really, really short program that demonstrates the problem,
+	and contact me.
+
+TODO:
+	Fix vfork().
+
+	Does crt0.o still need to be a separate file?  Can't I just
+	stick it in libc.a and be done with it?  Is that specified in
+	the GCC link options?
+
+
