@@ -1,15 +1,8 @@
+
 #ifdef __CSKYABIV2__
 #include <abiv2_vfork.S>
 #else
-#include <asm/unistd.h>
-
-#ifndef SAVE_PID
-#define SAVE_PID
-#endif
-
-#ifndef RESTORE_PID
-#define RESTORE_PID
-#endif
+#include <sys/syscall.h>
 
 #ifndef __NR_vfork
 #define __NR_vfork __NR_fork /* uClinux-2.0 only has fork which is vfork */
@@ -19,20 +12,13 @@
 
 	.text
 	.align 2
-//	.globl errno
-//	.globl vfork
-	.globl __vfork
-//#if defined __HAVE_ELF__
-//	.type	 vfork,@function
-	.type	 __vfork,@function
-//#endif
-//vfork:
+	.globl  __vfork
+	.hidden __vfork
+	.type	__vfork,@function
 __vfork:
 	/* You should save r15, if you call a function. */
-	SAVE_PID
 	lrw     r1, __NR_vfork          /* Set syscall number */
 	trap	0
-	RESTORE_PID
 	movi	r7, 125
 	not     r7
 	cmphs 	r2, r7

@@ -1,16 +1,6 @@
-/* Adapted from glibc */
-/* Copyright (C) 1996, 1997 Free Software Foundation, Inc. */
-
-/* clone is even more special than fork as it mucks with stacks
-   and invokes a function in the right context after its all over.  */
 #define _ERRNO_H	1
 #include <bits/errno.h>
 #include <asm/unistd.h>
-
-
-#ifdef RESET_PID
-#include <tls.h>
-#endif
 
 #define CLONE_THREAD_BIT  16 /* CLONE_THREAD = 0x00010000 */
 #define CLONE_VM_BIT      8  /* CLONE_VM = 0x00000100 */
@@ -39,10 +29,7 @@ __clone:
         subi    a1, 8                  /* adjust newsp for save fun_ptr & arguments */
         st.w    a0, (a1, 0x0)          /* save function in newsp */
         st.w    a3, (a1, 0x4)          /* save arguments in newsp */
-#ifdef RESET_PID
-        subi    a1, 8
-        st.w    a2, (a1, 0x0)          /* Save clone flags.  */
-#endif
+
         mov     a0, a2                 /* get flags */
         mov     a2, a4                 /* get p_pid */
         ld.w    a3, (sp, 0x0)          /* get c_pid */
@@ -50,14 +37,14 @@ __clone:
         lrw     r1, __NR_clone         /* set syscall number */
         trap	0		       /* Do the system call */
         btsti	a0, 31                 /* r2 less than zero */
-        bt   __syscall_error
+        bt   ___syscall_error
         cmpnei  a0, 0
         bf   thread_start               /* r2 equals to zero */
         rts
 
 __error_arg:
         lrw	a0, -EINVAL
-__syscall_error:
+___syscall_error:
         rsubi   a0, 0                   /* invert a0 */
         subi    sp, 16
         st.w	lr, (sp, 0x0)           /* store lr */
@@ -84,29 +71,6 @@ __syscall_error:
         rts
 
 thread_start:
-#ifdef RESET_PID
-        ld.w    a1, (sp, 0x0)
-        btsti   a1, CLONE_THREAD_BIT
-        bt      .donepid
-        bmaski  a2, 0
-        btsti   a1, CLONE_VM_BIT
-        bt      .gotpid
-        lrw     r1, __NR_getpid
-        trap    0
-        mov     a2, a0
-
-.gotpid:
-
-        READ_THREAD_POINTER()
-        lrw     a3, PID_OFFSET         /* PID_OFFSET is less then 0 */
-        add     a3, a0
-        stw     a2, (a3, 0x0)
-        lrw     a3, TID_OFFSET         /* TID_OFFSET is less then 0 */
-        add     a3, a0
-        stw     a2, (a3, 0x0)
-.donepid:
-        addi    sp, 8
-#endif
         ld.w    a0, (sp, 0x4)          /* save arguments in newsp */
         ld.w    a5, (sp, 0x0)          /* save function in newsp */
         addi    sp, 8

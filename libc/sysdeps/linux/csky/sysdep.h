@@ -21,7 +21,6 @@
 #define _LINUX_CSKY_SYSDEP_H 1
 
 #include <common/sysdep.h>
-#include <sys/syscall.h>
 
 /* For Linux we can use the system call table in the header file
 	/usr/include/asm/unistd.h

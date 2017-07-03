@@ -12,7 +12,7 @@
    glibc-2.3.2/sysdeps/unix/sysv/linux/arm/sysdep.h
 */
 
-#include <errno.h>
+//#include <errno.h>
 
 #define INLINE_SYSCALL_NCS(name, nr, args...)				\
 (__extension__								\
