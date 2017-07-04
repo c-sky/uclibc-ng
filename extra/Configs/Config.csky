@@ -5,7 +5,7 @@ config TARGET_ARCH
 config FORCE_OPTIONS_FOR_ARCH
 	bool
 	default y
-	select ARCH_LITTLE_ENDIAN
+	select ARCH_ANY_ENDIAN
 	select ARCH_HAS_DEPRECATED_SYSCALLS
 	select ARCH_USE_MMU
 	select ARCH_HAS_MMU
