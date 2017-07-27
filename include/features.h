@@ -40,6 +40,7 @@
    _SVID_SOURCE		ISO C, POSIX, and SVID things.
    _ATFILE_SOURCE	Additional *at interfaces.
    _GNU_SOURCE		All of the above, plus GNU extensions.
+   _DEFAULT_SOURCE	Equivalent to defining _BSD_SOURCE and _SVID_SOURCE.
    _REENTRANT		Select additionally reentrant object.
    _THREAD_SAFE		Same as _REENTRANT, often used by other systems.
    _FORTIFY_SOURCE	If set to numeric value > 0 additional security
@@ -77,7 +78,6 @@
    __USE_GNU		Define GNU extensions.
    __USE_REENTRANT	Define reentrant/thread-safe *_r functions.
    __USE_FORTIFY_LEVEL	Additional security measures used, according to level.
-   __FAVOR_BSD		Favor 4.3BSD things in cases of conflict.
 
    The macros `__GNU_LIBRARY__', `__GLIBC__', and `__GLIBC_MINOR__' are
    defined by this file unconditionally.  `__GNU_LIBRARY__' is provided
@@ -114,7 +114,6 @@
 #undef	__USE_GNU
 #undef	__USE_REENTRANT
 #undef	__USE_FORTIFY_LEVEL
-#undef	__FAVOR_BSD
 #undef	__KERNEL_STRICT_NAMES
 
 /* Suppress kernel-name space pollution unless user expressedly asks
@@ -140,13 +139,18 @@
 # define __GNUC_PREREQ(maj, min) 0
 #endif
 
+/* _DEFAULT_SOURCE is equivalent to defining _BSD_SOURCE and _SVID_SOURCE
+ * and vice versa. */
+#ifdef _DEFAULT_SOURCE
+# undef  _BSD_SOURCE
+# define _BSD_SOURCE	1
+# undef  _SVID_SOURCE
+# define _SVID_SOURCE	1
+#endif
 
-/* If _BSD_SOURCE was defined by the user, favor BSD over POSIX.  */
-#if defined _BSD_SOURCE && \
-    !(defined _POSIX_SOURCE || defined _POSIX_C_SOURCE || \
-      defined _XOPEN_SOURCE || defined _XOPEN_SOURCE_EXTENDED || \
-      defined _GNU_SOURCE || defined _SVID_SOURCE)
-# define __FAVOR_BSD	1
+#if defined _BSD_SOURCE || defined _SVID_SOURCE
+# undef _DEFAULT_SOURCE
+# define _DEFAULT_SOURCE	1
 #endif
 
 /* If _GNU_SOURCE was defined by the user, turn on all the other features.  */

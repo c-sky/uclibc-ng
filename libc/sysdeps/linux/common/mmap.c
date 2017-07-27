@@ -1,4 +1,3 @@
-/* vi: set sw=4 ts=4: */
 /*
  * mmap() for uClibc
  *
@@ -21,6 +20,7 @@ static _syscall6(void *, _mmap, void *, addr, size_t, len,
 		 int, prot, int, flags, int, fd, __off_t, offset)
 
 #elif defined __NR_mmap2 && defined _syscall6
+
 
 # include <errno.h>
 # include <bits/uClibc_page.h>
@@ -52,7 +52,6 @@ static void *_mmap(void *addr, size_t len, int prot, int flags,
 }
 
 #elif defined __NR_mmap
-
 # define __NR___syscall_mmap __NR_mmap
 static __inline__ _syscall1(void *, __syscall_mmap, unsigned long *, buffer)
 
