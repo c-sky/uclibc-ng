@@ -24,38 +24,6 @@
 #endif
 
 #if !defined NOT_IN_libc || defined IS_IN_libpthread || defined IS_IN_librt
-/*
- * FIXME: get gb 
- */
-# ifdef __PIC__
-
-#define __GET_GB  \
-           bsr 1f; 1: lrw gb, 1b@GOTPC; addu gb, lr;
-
-#  define __JSR(symbol)    \
-           lrw a2, symbol@PLT; add a2, gb; ld.w a2, (a2); jsr a2;
-
-
-/*
- *  cannot use jmp a2, when lazy, a2 is point to plt, which
- *        using gb without caculating it
- */
-#  define PSEUDO_ERRJMP  \
-           subi sp, 8; st.w lr, (sp); st.w gb, (sp, 4);         \
-           __GET_GB            \
-           lrw a2, __syscall_error@PLT; add a2, gb; ld.w a2, (a2);  \
-           jsr a2;                                      \
-           ld.w lr, (sp); ld.w gb, (sp, 4); addi sp, 8;         \
-           rts;
-
-# else
-
-#  define __GET_GB
-#  define PSEUDO_ERRJMP jmpi __syscall_error;
-#  define __JSR(symbol) jsri symbol;
-
-# endif
-
 # ifdef __CSKYABIV2__
 
 #  undef PSEUDO
