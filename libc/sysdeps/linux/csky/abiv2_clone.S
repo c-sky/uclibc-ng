@@ -17,10 +17,6 @@ __clone:
 	stw	a0, (a1, 0)            /* insert the args onto the new stack */
 	stw	a3, (a1, 4)            /* insert the args onto the new stack */
 
-#ifdef RESET_PID
-	subi	a1, 8                  /* save a2(flags) */
-        stw	a2, (a1, 0x0)
-#endif
 	mov	t1, r7                 /* save r7 */
 	mov	t2, r4                 /* save r4 (has t2 ?)*/
 
@@ -67,42 +63,11 @@ __syscall_error:
         rts
 
 thread_start:
-#ifdef RESET_PID
-        ld.w    a1, (sp, 0x0)
-        btsti   a1, CLONE_THREAD_BIT
-        bt      .donepid
-        bmaski  a2, 0
-        btsti   a1, CLONE_VM_BIT
-        bt      .gotpid
-        lrw     r1, __NR_getpid
-        trap    0
-        mov     a2, a0
-
-.gotpid:
-        READ_THREAD_POINTER()
-        lrw     a3, PID_OFFSET         /* PID_OFFSET is less then 0 */
-        add     a3, a0
-        stw     a2, (a3, 0x0)
-        lrw     a3, TID_OFFSET         /* TID_OFFSET is less then 0 */
-        add     a3, a0
-        stw     a2, (a3, 0x0)
-.donepid:
-        addi    sp, 8
-#endif
         ldw     a0, (sp, 0x4)           /* restore arguments in newsp */
         ldw     t0, (sp, 0x0)           /* restore function in newsp */
         addi    sp, 8
         jsr     t0                      /* Call thread function */
         lrw     r7, __NR_exit           /* Set system call number */ 
         trap    0
-
-/*
-#if defined(__HAVE_ELF__)
-        .weak clone
-        clone = __clone
-#else
-        .set clone, __clone
-#endif
-*/
 
 weak_alias (__clone, clone)
