@@ -78,17 +78,9 @@ _start:
 #else   // __PIC__
         lrw	a0, main
         ldw     a1, (sp)
-#ifdef __ARCH_USE_MMU__
+
         mov     a2, sp
         addi	a2, 4
-#else
-        /*
-         * uClinux/csky stacks look a little different from normal
-         * MMU-full Linux/csky stacks (for no good reason)
-         */
-        /* pull argv off the stack. */
-        ldw     a2, (sp, 4)	
-#endif
 
 	mov	a3, sp
 	subi	sp, sp, 0x10
