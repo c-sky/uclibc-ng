@@ -1,9 +1,7 @@
 CSRC-y := pselect.c mmap.c
 CSRC-y += ptrace.c brk.c syscall.c __syscall_error.c 
 
-#ifeq ($(__CSKYABIV1__),y)
 SSRC-y := __longjmp.S bsd-_setjmp.S bsd-setjmp.S setjmp.S
-#endif
 
 ifeq ($(UCLIBC_HAS_THREADS_NATIVE),y)
 SSRC-y += libc-read_tp.S vfork.S clone.S

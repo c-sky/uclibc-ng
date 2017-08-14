@@ -1,13 +1,6 @@
-
-/* Copyright (C) 2002, David McCullough <davidm@snapgear.com> */
-/* This file is released under the LGPL, any version you like */
 #ifdef __CSKYABIV2__
 #include <abiv2_setjmp.S>
 #else
-
-#define _ASM
-#define _SETJMP_H
-#include <bits/setjmp.h>
 
 .globl __sigsetjmp;
 .type  __sigsetjmp,@function

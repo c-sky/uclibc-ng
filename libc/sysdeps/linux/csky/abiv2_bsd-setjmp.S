@@ -1,11 +1,3 @@
-
-/* Copyright (C) 2002, David McCullough <davidm@snapgear.com> */
-/* This file is released under the LGPL, any version you like */
-
-#define _ASM
-#define _SETJMP_H
-#include <bits/setjmp.h>
-
 .globl setjmp;
 .type  setjmp,@function
 .align 4;
