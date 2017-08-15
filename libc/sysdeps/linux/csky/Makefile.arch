@@ -1,11 +1,8 @@
-CSRC-y := pselect.c mmap.c
+CSRC-y := pselect.c mmap.c clone.c
 CSRC-y += ptrace.c brk.c syscall.c __syscall_error.c 
 
 SSRC-y := __longjmp.S bsd-_setjmp.S bsd-setjmp.S setjmp.S
-
-ifeq ($(UCLIBC_HAS_THREADS_NATIVE),y)
-SSRC-y += libc-read_tp.S vfork.S clone.S
-endif
+SSRC-y += libc-read_tp.S vfork.S csky_clone.S
 
 ifeq ($(UCLIBC_HAS_ADVANCED_REALTIME),y)
 CSRC-y += posix_fadvise.c posix_fadvise64.c 

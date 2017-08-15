@@ -76,71 +76,65 @@
 #define PSEUDO_ERRVAL(name, syscall_name, args) \
   .text; \
   99: PSEUDO_ERRJMP; \
-  ENTRY(name) \
-  DO_CALL (syscall_name, args); \
+  ENTRY(name); \
+  DO_CALL(syscall_name, args); \
   btsti	a0, 31; \
-  bt 99b; \
-  rts;
+  bt 99b;
 
 #undef PSEUDO_END_ERRVAL
 #define PSEUDO_END_ERRVAL(name) \
+  rts; \
   END(name)
 
-/* DO_CALL implement */
+/* DO_CALL */
 #undef	DO_CALL
 #ifdef	__CSKYABIV2__
 
 #define	DO_CALL(syscall_name, args) \
   DOARGS_##args \
-  mov	t0, l3; \
-  lrw	l3, SYS_ify (syscall_name); \
+  mov	t0, r7; \
+  lrw	r7, SYS_ify (syscall_name); \
   trap	0; \
-  mov	l3, t0; \
+  mov	r7, t0; \
   UNDOARGS_##args
 
-#define DOARGS_0 /* nothing */
-#define DOARGS_1 /* nothing */
-#define DOARGS_2 /* nothing */
-#define DOARGS_3 /* nothing */
-#define DOARGS_4 /* nothing */
-#define DOARGS_5 subi sp, 4;  st.w r4, (sp, 0); ld.w r4, (sp, 4);
-#define DOARGS_6 subi sp, 8;  stm r4-r5, (sp);  ld.w r4, (sp, 8);  ld.w r5, (sp, 12);
-#define DOARGS_7 subi sp, 12; stm r4-r6, (sp);  ld.w r4, (sp, 12); ld.w r5, (sp, 16); ld.w r6, (sp, 20);
+#define DOARGS_0
+#define DOARGS_1
+#define DOARGS_2
+#define DOARGS_3
+#define DOARGS_4
+#define DOARGS_5 subi sp, 4; st.w r4, (sp, 0); ld.w r4, (sp, 4);
+#define DOARGS_6 subi sp, 8; stm r4-r5, (sp); ld.w r4, (sp, 8); ld.w r5, (sp, 12);
 
-#define UNDOARGS_0 /* nothing */
-#define UNDOARGS_1 /* nothing */
-#define UNDOARGS_2 /* nothing */
-#define UNDOARGS_3 /* nothing */
-#define UNDOARGS_4 /* nothing */
+#define UNDOARGS_0
+#define UNDOARGS_1
+#define UNDOARGS_2
+#define UNDOARGS_3
+#define UNDOARGS_4
 #define UNDOARGS_5 ld.w r4, (sp, 0); addi sp, 4;
-#define UNDOARGS_6 ldm r4-r5, (sp);  addi sp, 8;
-#define UNDOARGS_7 ldm r4-r6, (sp);  addi sp, 12;
+#define UNDOARGS_6 ldm r4-r5, (sp); addi sp, 8;
 
 #else /* __CSKYABIV2__ */
 
 #define DO_CALL(syscall_name, args) \
-  DOARGS_##args \
   lrw  r1, SYS_ify (syscall_name); \
-  trap 0; \
-  UNDOARGS_##args
+  trap 0;
 
-#define DOARGS_0 /* nothing */
-#define DOARGS_1 /* nothing */
-#define DOARGS_2 /* nothing */
-#define DOARGS_3 /* nothing */
-#define DOARGS_4 /* nothing */
-#define DOARGS_5 /* nothing */
-#define DOARGS_6 /* nothing */
-#define DOARGS_7 subi sp, 8; st.w r8, (sp); ld.w r8, (sp, 16);
+#define DOARGS_0
+#define DOARGS_1
+#define DOARGS_2
+#define DOARGS_3
+#define DOARGS_4
+#define DOARGS_5
+#define DOARGS_6
 
-#define UNDOARGS_0 /* nothing */
-#define UNDOARGS_1 /* nothing */
-#define UNDOARGS_2 /* nothing */
-#define UNDOARGS_3 /* nothing */
-#define UNDOARGS_4 /* nothing */
-#define UNDOARGS_5 /* nothing */
-#define UNDOARGS_6 /* nothing */
-#define UNDOARGS_7 ld r8, (sp); addi sp, 8;
+#define UNDOARGS_0
+#define UNDOARGS_1
+#define UNDOARGS_2
+#define UNDOARGS_3
+#define UNDOARGS_4
+#define UNDOARGS_5
+#define UNDOARGS_6
 
 #endif /* __CSKYABIV2__ */
 
@@ -202,7 +196,8 @@
   ldw  r4, (sp, 0); \
   ldw  r5, (sp, 4); \
   addi sp, 8
-#endif  /* DO_CALL_2 */
+
+#endif  /* __CSKYABIV2__ */
 
 #endif /* __ASSEMBLER__ */
 #endif /* _LINUX_CSKY_SYSDEP_H */
