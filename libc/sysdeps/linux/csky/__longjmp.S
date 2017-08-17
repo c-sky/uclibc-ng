@@ -1,42 +1,39 @@
+#include <sysdep.h>
+
+ENTRY(__longjmp)
+        ldw	sp, (a0, 0)
+	ldw	lr, (a0, 4)
+
+	ldw	l0, (a0, 8)
+	ldw	l1, (a0, 12)
+	ldw	l2, (a0, 16)
+	ldw	l3, (a0, 20)
+	ldw	l4, (a0, 24)
+	ldw	l5, (a0, 28)
+
 #ifdef __CSKYABIV2__
-#include <abiv2__longjmp.S>
+	ldw	l6, (a0, 32)
+	ldw	l7, (a0, 36)
+	ldw	l8, (a0, 40)
+	ldw	l9, (a0, 44)
+
+	ldw	r26, (a0, 48)
+	ldw	r27, (a0, 52)
+	ldw	gb,  (a0, 56)
+	ldw	r29, (a0, 60)
+	ldw	r30, (a0, 64)
+	ldw	tls, (a0, 68)
 #else
-
-.globl __longjmp;
-.type  __longjmp,@function
-.align 4;
-
-__longjmp:
-	ldw	r8,  (r2, 8)
-	ldw	r9,  (r2, 12)
-	ldw	r10, (r2, 16)
-	ldw	r11, (r2, 20)
-	ldw	r12, (r2, 24)
-	ldw	r13, (r2, 28)
-	ldw	r14, (r2, 32)
-	/* r15 = pc before call __setjmp */
-	ldw	r15, (r2, 4)
-
-#if defined(__ck803__) || defined(__ck810__)
-	ldw	r16, (r2, 36)
-	ldw	r17, (r2, 40)
-	ldw	r18, (r2, 44)
-	ldw	r19, (r2, 48)
-
-	ldw	r26, (r2, 52)
-	ldw	r27, (r2, 56)
-	ldw	r28, (r2, 60)
-	ldw	r29, (r2, 64)
-	ldw	r30, (r2, 68)
-	ldw	r31, (r2, 72)
+	ldw	gb, (a0, 32)
 #endif
 
-	ldw	r0, (r2, 0)
-	mov 	r2, r3
-	cmpnei	r3, 0
-	bt	1f
-	movi	r2, 1
+	mov    a0, a1
+	cmpnei a1, 0
+	bt     1f
+	movi   a0, 1
 1:
 	rts
+
+END(__longjmp)
 libc_hidden_def(__longjmp)
-#endif
+
