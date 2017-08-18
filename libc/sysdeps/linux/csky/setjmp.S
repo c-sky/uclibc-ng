@@ -1,6 +1,6 @@
 #include <sysdep.h>
 
-ENTRY(__sigsetjmp)
+ENTRY(setjmp)
 	stw     sp, (a0, 0)
 	stw     lr, (a0, 4)
 
@@ -34,5 +34,8 @@ ENTRY(__sigsetjmp)
 	ldw	lr, (sp, 0)
 	addi	sp, 8
 	rts
-END(__sigsetjmp)
+END(setjmp)
+
+strong_alias(setjmp, __sigsetjmp)
+strong_alias(setjmp, _setjmp)
 
