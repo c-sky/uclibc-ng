@@ -1,10 +1,6 @@
-CSRC-y := pselect.c mmap.c clone.c
-CSRC-y += brk.c __syscall_error.c
+CSRC-y := clone.c __syscall_error.c
 
 SSRC-y := __longjmp.S setjmp.S
 SSRC-y += libc-read_tp.S vfork.S csky_clone.S
 
-ifeq ($(UCLIBC_HAS_ADVANCED_REALTIME),y)
-CSRC-y += posix_fadvise.c posix_fadvise64.c
-endif
 
