@@ -454,8 +454,6 @@ ifeq ($(TARGET_ARCH),cris)
 endif
 
 ifeq ($(TARGET_ARCH),csky)
-	CPU_CFLAGS-y		+= -mstm
-
 	CPU_CFLAGS-$(CK610)	+= -mcpu=ck610f
 	CPU_CFLAGS-$(CK810)	+= -mcpu=ck810f
 	CPU_CFLAGS-$(CK807)	+= -mcpu=ck807f
