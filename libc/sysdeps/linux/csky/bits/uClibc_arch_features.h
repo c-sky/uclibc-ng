@@ -10,11 +10,10 @@
 /* can your target use syscall6() for mmap ? */
 #undef __UCLIBC_MMAP_HAS_6_ARGS__
 
-/* does your target use syscall4() for truncate64 ? (32bit arches only) */
 #ifdef __CSKYABIV2__
-#undef __UCLIBC_TRUNCATE64_HAS_4_ARGS__
+#undef __UCLIBC_SYSCALL_ALIGN_64BIT__
 #else
-#define __UCLIBC_TRUNCATE64_HAS_4_ARGS__
+#define __UCLIBC_SYSCALL_ALIGN_64BIT__
 #endif
 
 /* does your target have a broken create_module() ? */
