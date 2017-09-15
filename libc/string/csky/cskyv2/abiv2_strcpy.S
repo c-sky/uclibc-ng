@@ -1,13 +1,6 @@
-/*
- * Copyright (C) 2011     Hangzhou C-SKY
- *
- * Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
- */
-
-
-#include <features.h>
 #include <endian.h>
 #include "macro.S"
+
 #ifdef WANT_WIDE
 # define Wstrcpy wcscpy
 #else
@@ -34,15 +27,6 @@ Wstrcpy:
         jmp     r15
 
        2:
-#if defined (__ck802__)
-        ldw     a2, (a1)
-        tstnbz  a2
-        bf      11f
-        stw     a2, (a3)
-        addi    a3, 4
-        addi    a1, 4
-        br      2b 
-#else
         ldw     a2, (a1)
         tstnbz  a2
         bf      11f
@@ -87,7 +71,6 @@ Wstrcpy:
         addi     a1, 32
         br       2b
 
-
        4:
         addi    a3, 4
         br      11f
@@ -114,7 +97,6 @@ Wstrcpy:
 
        10:
         addi    a3, 28
-#endif
        11:
 #ifdef __CSKYBE__
         xtrb0   t0, a2

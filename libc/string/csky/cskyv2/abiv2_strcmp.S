@@ -1,10 +1,3 @@
-/*
- * Copyright (C) 2011     Hangzhou C-SKY
- *
- * Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
- */
-
-#include <features.h>
 #include <endian.h>
 #include "macro.S"
 
@@ -35,10 +28,6 @@ Wstrcmp:
     M_BNE      a0, t0, 1f // if d[i] != s[i], goto 1f
     tstnbz     a0       // if d[i] == s[i], check if d or s is at the end. 
     bf         3f       // if at the end, goto 3f (finish comparing)
-#if defined ( __ck802__ )
-    addi       a3, 4
-    addi       a1, 4
-#else
     ldw        a0, (a3, 4)
     ldw        t0, (a1, 4)
     M_BNE      a0, t0, 1f
@@ -83,7 +72,6 @@ Wstrcmp:
 
     addi       a3, 32
     addi       a1, 32
-#endif
     br         1b
 
 #ifdef __CSKYBE__
