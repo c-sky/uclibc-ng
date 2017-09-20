@@ -29,8 +29,10 @@ ENTRY(setjmp)
 
 	subi	sp, 8
 	stw	lr, (sp, 0)
+	stw     gb, (sp, 4)
 	__GET_GB
 	__JSR(__sigjmp_save)
+	ldw     gb, (sp, 4)
 	ldw	lr, (sp, 0)
 	addi	sp, 8
 	rts
