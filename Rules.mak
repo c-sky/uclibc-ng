@@ -454,6 +454,10 @@ ifeq ($(TARGET_ARCH),cris)
 endif
 
 ifeq ($(TARGET_ARCH),csky)
+	# In csky gas implement, we use $t and $d to detect .text or literal pool.
+	# So we couldn't strip them for objdump.
+	STRIP_FLAGS += -K "$$"t -K "$$"d
+
 	CPU_CFLAGS-$(CK610)	+= -mcpu=ck610f
 	CPU_CFLAGS-$(CK810)	+= -mcpu=ck810f
 	CPU_CFLAGS-$(CK807)	+= -mcpu=ck807f
