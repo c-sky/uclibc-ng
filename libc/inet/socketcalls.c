@@ -355,7 +355,7 @@ static ssize_t __NC(sendmmsg)(int sockfd, struct mmsghdr *msg, size_t vlen,
 			      int flags)
 {
 # ifdef __NR_sendmmsg
-	return (ssize_t)INLINE_SYSCALL(recvmmsg, 4, sockfd, msg, vlen, flags);
+	return (ssize_t)INLINE_SYSCALL(sendmmsg, 4, sockfd, msg, vlen, flags);
 # else
 	unsigned long args[4];
 
