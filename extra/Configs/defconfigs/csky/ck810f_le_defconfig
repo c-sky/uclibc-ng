@@ -2,7 +2,6 @@ TARGET_csky=y
 CK810=y
 UCLIBC_HAS_FPU=y
 ARCH_WANTS_LITTLE_ENDIAN=y
-# UCLIBC_HAS_FPU is not set
 DO_C99_MATH=y
 UCLIBC_HAS_FENV=y
 KERNEL_HEADERS="/opt/linux-headers/include"
