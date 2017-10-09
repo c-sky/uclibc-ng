@@ -131,18 +131,24 @@ _dl_do_reloc(struct elf_resolve *tpnt, struct r_scope_elem *scope,
     int symtab_index;
     char *symname;
     unsigned long *reloc_addr;
-    unsigned short *opcode16_addr;
-    unsigned int insn_opcode = 0x0;
     unsigned long symbol_addr;
     struct symbol_ref sym_ref;
 #if defined (__SUPPORT_LD_DEBUG__)
     unsigned long old_val;
 #endif
+#if defined USE_TLS && USE_TLS
 	struct elf_resolve *tls_tpnt = NULL;
- 
+#endif
+#if defined(__CSKYABIV2__)
+    unsigned int insn_opcode = 0x0;
+    unsigned short *opcode16_addr;
+#endif
+
     reloc_addr = (unsigned long *)(intptr_t)(tpnt->loadaddr + (unsigned long)rpnt->r_offset);
+#if defined(__CSKYABIV2__)
     opcode16_addr = (unsigned short *)reloc_addr;
-    reloc_type = ELF32_R_TYPE(rpnt->r_info);
+#endif
+	reloc_type = ELF32_R_TYPE(rpnt->r_info);
 
 	if (reloc_type == R_CKCORE_NONE)
 		return 0;
@@ -166,7 +172,9 @@ _dl_do_reloc(struct elf_resolve *tpnt, struct r_scope_elem *scope,
 		if (!symbol_addr && (ELF_ST_TYPE(symtab[symtab_index].st_info) != STT_TLS)
 			&& (ELF_ST_BIND(symtab[symtab_index].st_info) != STB_WEAK)) 
             return 1;
+#if defined USE_TLS && USE_TLS
 		tls_tpnt = sym_ref.tpnt;
+#endif
     }else{
 		/*
 		 * Relocs against STN_UNDEF are usually treated as using a
@@ -174,7 +182,9 @@ _dl_do_reloc(struct elf_resolve *tpnt, struct r_scope_elem *scope,
 		 * reloc itself.
 		 */
         symbol_addr = symtab[symtab_index].st_name;
+#if defined USE_TLS && USE_TLS
 		tls_tpnt = tpnt;
+#endif
     }
 #if defined (__SUPPORT_LD_DEBUG__)
     old_val = *reloc_addr;
@@ -194,7 +204,7 @@ _dl_do_reloc(struct elf_resolve *tpnt, struct r_scope_elem *scope,
         case R_CKCORE_RELATIVE:
             *reloc_addr = (unsigned long)tpnt->loadaddr + rpnt->r_addend;
             break;
-# if defined(__ck810__) || defined(__ck807__)
+#if defined(__CSKYABIV2__)
         case R_CKCORE_ADDR_HI16:
             insn_opcode = (*opcode16_addr << 16) | (*(opcode16_addr + 1));
             insn_opcode = (insn_opcode & 0xffff0000)
