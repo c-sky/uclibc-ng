@@ -9,8 +9,7 @@
 # define Wstrcoll strcoll
 #endif
 
-
-/* FIXME attention!!! it may be a bug when WANT_WIDE define , shangyh */
+/* FIXME attention!!! it may be a bug when WANT_WIDE define */
 /*libc_hidden_proto(Wstrcmp)*/
 	.align 2
 	.global Wstrcmp

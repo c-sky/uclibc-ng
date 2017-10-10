@@ -1,13 +1,3 @@
-/*
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  (C) Copyright 2011, C-SKY Microsystems Co., Ltd. (www.c-sky.com)
- *  
- */ 
-  
 #ifndef _SYS_USER_H
 #define _SYS_USER_H  1  
 
@@ -18,7 +8,7 @@ struct user_fpregs {
 };
 
 struct user_regs {
-#if defined(__ck803__) || defined(__ck810__)
+#if defined(__CSKYABIV2__)
 	unsigned long int uregs[34];  /* CSKY V2 has 32 general rgister */
 #else
 	unsigned long int uregs[18];  /* CSKY V1 has 16 general rgister */

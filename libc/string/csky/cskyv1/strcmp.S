@@ -1,12 +1,5 @@
-/*
- * Copyright (C) 2011     Hangzhou C-SKY
- *
- * Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
- */
-
 #include <features.h>
 #include <endian.h>
-
 
 #ifdef WANT_WIDE
 # define Wstrcmp wcscmp
@@ -16,8 +9,7 @@
 # define Wstrcoll strcoll
 #endif
 
-
-/* FIXME attention!!! it may be a bug when WANT_WIDE define , shangyh */
+/* FIXME attention!!! it may be a bug when WANT_WIDE define */
 /*libc_hidden_proto(Wstrcmp)*/
 	.align 2
 	.global Wstrcmp

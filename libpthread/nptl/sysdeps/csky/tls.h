@@ -1,22 +1,3 @@
-/* Definitions for thread-local data handling.  NPTL/csky version.
-   Copyright (C) 2002, 2003, 2005 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
-
-   The GNU C Library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Lesser General Public
-   License as published by the Free Software Foundation; either
-   version 2.1 of the License, or (at your option) any later version.
-
-   The GNU C Library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public
-   License along with the GNU C Library; if not, write to the Free
-   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-   02111-1307 USA.  */
-
 #ifndef _TLS_H
 #define _TLS_H 1
 
@@ -50,12 +31,6 @@ typedef union dtv
        __asm__ __volatile__ ("trap 3;"	    \
                              : "=r" (__result) : : );      \
        __result; })
-/*
-//    ({ register unsigned int __result __asm__("a0");                 \
-//       __asm__ __volatile__ ("lrw a0, 0x7fff8fe0; jsr a0;"	    \
-//                             : "=r" (__result) : : "lr");      \
-//       __result; })
-*/
 #endif
 
 #else /* __ASSEMBLER__ */
@@ -66,14 +41,7 @@ typedef union dtv
        mov r0, r31;	           
 # else
 # define READ_THREAD_POINTER() \
-       trap 3;             \
-/*       
-//       subi sp, 8;        \
-//       st.w lr, (sp, 0);   \
-//       lrw a0, 0x7fff8fe0;  \
-//       jsr a0;	    \
-//       ld.w lr, (sp, 0);   \
-//       addi sp, 8;        */
+       trap 3;
 # endif
 #endif /* __ASSEMBLER__ */
 

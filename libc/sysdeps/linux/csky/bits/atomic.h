@@ -1,26 +1,8 @@
-/* Copyright (C) 2003, 2004 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
-   Contributed by Andreas Schwab <schwab@suse.de>, 2003.
-
-   The GNU C Library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Lesser General Public
-   License as published by the Free Software Foundation; either
-   version 2.1 of the License, or (at your option) any later version.
-
-   The GNU C Library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public
-   License along with the GNU C Library.  If not, see
-   <http://www.gnu.org/licenses/>.  */
 #ifndef __CSKY_ATOMIC_H_
 #define __CSKY_ATOMIC_H_
 
 #include <stdint.h>
 #include <sysdep.h>
-
 
 typedef int8_t atomic8_t;
 typedef uint8_t uatomic8_t;
@@ -107,14 +89,5 @@ typedef uintmax_t uatomic_max_t;
 # define atomic_compare_and_exchange_val_acq(mem, new, old) \
   __atomic_val_bysize (__arch_compare_and_exchange_val, int,    \
                mem, new, old)
-/*
-# define atomic_compare_and_exchange_bool_rel(mem, new, old)    \
-  __atomic_bool_bysize (__arch_compare_and_exchange_bool, int,  \
-                mem, new, old)
-
-# define atomic_compare_and_exchange_val_rel(mem, new, old) \
-  __atomic_val_bysize (__arch_compare_and_exchange_val, int,    \
-               mem, new, old)
-*/ 
 
 #endif

@@ -1,10 +1,3 @@
-/* vi: set sw=4 ts=4: */
-/*
- * Various assembly language/system dependent hacks that are required
- * so that we can minimize the amount of platform specific code.
- * Copyright (C) 2010-2010 by Yunhai Shang(yunhai_shang@c-sky.com)
- */
-
 /* Define this if the system uses RELOCA.  */
 #define ELF_USES_RELOCA
 

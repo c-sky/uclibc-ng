@@ -1,10 +1,3 @@
-/*
- * Copyright (C) 2011     Hangzhou C-SKY
- *
- * Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
- */
-
-
 #include <features.h>
 #include <endian.h>
 

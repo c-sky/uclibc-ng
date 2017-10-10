@@ -1,9 +1,3 @@
-/* vi: set sw=4 ts=4: */
-/*
- * Architecture specific code used by dl-startup.c
- * Copyright (C) 2010-2012 by Yunhai Shang (yunhai_shang@c-sky.com)
- */
-
 #ifdef __CSKYABIV2__
 
 __asm__ (

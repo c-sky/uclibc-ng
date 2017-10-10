@@ -1,10 +1,6 @@
 #ifndef _BITS_STAT_STRUCT_H
 #define _BITS_STAT_STRUCT_H
 
-/* This file provides whatever this particular arch's kernel thinks 
- * struct kernel_stat should look like...  It turns out each arch has a 
- * different opinion on the subject... */
-
 #define STAT_HAVE_NSEC 1
 
 struct kernel_stat {
