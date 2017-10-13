@@ -39,7 +39,7 @@ Wmemcpy:
 .L0:
     mov     r6, r3
     andi    r6, 3
-    cmpnei  r6, 0                           
+    cmpnei  r6, 0
     jbt     .L_dest_aligned_but_src_not_aligned     /* If dest is aligned, but src is not aligned */
 
     cmplti  r4, 16                                  /* dest and src are all aligned */
@@ -57,9 +57,9 @@ Wmemcpy:
     stw     r5, (r7, 4)
     stw     r8, (r7, 8)
     stw     r9, (r7, 12)
-    subi    r4, 16                          
-    addi    r3, 16                          
-    addi    r7, 16                          
+    subi    r4, 16
+    addi    r3, 16
+    addi    r7, 16
     cmplti  r4, 16
     jbf     .L_aligned_and_len_larger_16bytes
     ldw     r8, (sp, 0)
@@ -99,7 +99,7 @@ Wmemcpy:
     cmplt   r5, r4
     jbt     .L_copy_by_byte
 
-.L1: 
+.L1:
     ldb     r1, (r3, 0)                             /* makes the dest align. */
     stb     r1, (r7, 0)
     addi    r6, 1
@@ -109,7 +109,7 @@ Wmemcpy:
     cmpnei  r6, 4
     jbt     .L1
     cmplti  r4, 4
-    jbt     .L_copy_by_byte   
+    jbt     .L_copy_by_byte
     jbf     .L0                                     /* judge whether the src is aligned. */
 
 .L_dest_aligned_but_src_not_aligned:
@@ -121,7 +121,7 @@ Wmemcpy:
 
     bclri   r3, 0
     bclri   r3, 1
-    ldw     r1, (r3, 0)                                     
+    ldw     r1, (r3, 0)
     addi    r3, 4
 
     subi    sp, 16
@@ -180,10 +180,10 @@ Wmemcpy:
     ldw     r9, (sp, 0)
     ldw     r10, (sp, 4)
     addi    sp, 8
-    ldw     r8, (sp,12) 
+    ldw     r8, (sp,12)
 
 .L_not_aligned_and_len_less_16bytes:
-    cmplti  r4, 4       
+    cmplti  r4, 4
     jbf     .L2
     rsubi   r6, 4                                   /* r6 is used to stored the misaligned bits */
     subu    r3, r6                                 /* initial the position */
@@ -191,8 +191,8 @@ Wmemcpy:
     ldw     r12, (sp, 4)
     ldw     r13, (sp, 8)
     addi    sp, 16
-    jbr     .L_copy_by_byte  
-.L2:     
+    jbr     .L_copy_by_byte
+.L2:
     ldw     r5, (r3, 0)
     GET_FRONT_BITS r1 r12
     mov     r11, r1

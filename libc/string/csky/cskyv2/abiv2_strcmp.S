@@ -25,7 +25,7 @@ Wstrcmp:
     ldw        a0, (a3, 0)
     ldw        t0, (a1, 0)
     M_BNE      a0, t0, 1f // if d[i] != s[i], goto 1f
-    tstnbz     a0       // if d[i] == s[i], check if d or s is at the end. 
+    tstnbz     a0       // if d[i] == s[i], check if d or s is at the end.
     bf         3f       // if at the end, goto 3f (finish comparing)
     ldw        a0, (a3, 4)
     ldw        t0, (a1, 4)

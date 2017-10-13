@@ -38,7 +38,7 @@ typedef union dtv
 # ifdef __CSKYABIV2__
 /* define r31 as thread pointer register? */
 # define READ_THREAD_POINTER() \
-       mov r0, r31;	           
+       mov r0, r31;
 # else
 # define READ_THREAD_POINTER() \
        trap 3;
@@ -74,7 +74,7 @@ typedef struct
 #  define TLS_INIT_TCB_SIZE	     sizeof (tcbhead_t)
 
 /* Alignment requirements for the initial TCB.  */
-#  define TLS_INIT_TCB_ALIGN     16 
+#  define TLS_INIT_TCB_ALIGN     16
 
 /* This is the size of the TCB.  */
 #  define TLS_TCB_SIZE		sizeof (tcbhead_t)

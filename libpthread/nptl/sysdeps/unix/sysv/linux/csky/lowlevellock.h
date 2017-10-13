@@ -70,9 +70,8 @@
       : (fl))								      \
    : ((fl) | (((private) ^ FUTEX_PRIVATE_FLAG)				      \
 	      & THREAD_GETMEM (THREAD_SELF, header.private_futex))))
-# endif	      
+# endif
 #endif
-
 
 #define lll_futex_wait(futexp, val, private) \
   lll_futex_timed_wait(futexp, val, NULL, private)

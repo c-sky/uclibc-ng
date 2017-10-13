@@ -1,5 +1,5 @@
 /*
- * This function is not called directly. It is jumped when attempting to use a 
+ * This function is not called directly. It is jumped when attempting to use a
  * symbol that has not yet been resolved.
  *
  *.plt*:
@@ -18,16 +18,14 @@
 .type  _dl_linux_resolve,@function
 
 _dl_linux_resolve:
-# if !defined(__CSKYABIV2__)
-
-# if !defined(__ck810__)
+#ifdef __CSKYABIV1__
     stw  r4, (r0, 8)
     stw  r5, (r0, 12)
     stw  r6, (r0, 16)
     stw  r7, (r0, 20)
     stw  r15,(r0, 24)
-    # load the ID of this module  
-    ldw  r2, (gb, 4)  
+    # load the ID of this module
+    ldw  r2, (gb, 4)
     # r2 = id, r3 = offset(do it in plt*)
 #ifdef __PIC__
     # get global offset table address_
@@ -40,9 +38,9 @@ _dl_linux_resolve:
     add r6, r7
     ldw r5, (r6, 0)
     jsr r5
-#else  /* no __PIC__ */ 
+#else  /* no __PIC__ */
     jsri  _dl_linux_resolver      /* need modify */
-#endif    
+#endif
     # Return from _dl_linux_resolver, the address of function is in r2
     mov  r1, r2
     # Restore the registers
@@ -57,20 +55,7 @@ _dl_linux_resolve:
     addi r0, 32
     # The address of function is in r1, call the function without saving pc
     jmp  r1
-#else   /* defined ck810 */
-    subi sp, 32
-    stm  r2-r7, (sp)
-    stw  r15, (sp, 24)
-    ldw  r2,  (gb, 4)
-    mov  r3, r21
-    bsr  _dl_linux_resolver
-    mov  r20, r2
-    ldw  r15, (sp, 24)
-    ldm  r2-r7, (sp)
-    addi sp, 32
-    jmp  r20
-#endif
-#else       /* __CSKYABIV2__ */
+#else       /* __CSKYABIV1__ */
     subi sp, 20
     stm  a0-a3, (sp)
     stw  lr, (sp, 16)

@@ -6,12 +6,9 @@
 .hidden __read_tp
 #endif
 
-/*
- * used by csky-gcc 
- */
 ENTRY (__read_tp)
 #ifdef __CSKYABIV2__
-	mov	a0, tls 
+	mov	a0, tls
 #else
 	trap 3
 #endif

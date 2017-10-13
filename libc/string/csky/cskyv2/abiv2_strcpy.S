@@ -16,7 +16,7 @@ Wstrcpy:
         or      a2, a1, a3
         andi    t0, a2, 3
         M_BEZ   t0, 2f
-        mov     t0, a1 
+        mov     t0, a1
        1:
         ld.b    a2, (t0)
         stb     a2, (a3)

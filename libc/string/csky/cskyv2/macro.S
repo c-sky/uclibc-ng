@@ -3,7 +3,7 @@
 .endm
 
 .macro M_BNEZ rx, label
- 	bnez  \rx, \label
+	bnez  \rx, \label
 .endm
 
 .macro M_BNE rx, ry, label

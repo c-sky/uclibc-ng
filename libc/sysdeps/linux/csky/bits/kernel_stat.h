@@ -28,7 +28,7 @@ struct kernel_stat {
 	struct timespec st_mtim;
 	struct timespec st_ctim;
 	unsigned long  __unused4;
-	unsigned long  __unused5;	
+	unsigned long  __unused5;
 };
 
 struct kernel_stat64 {
@@ -49,7 +49,7 @@ struct kernel_stat64 {
 	long long       st_size;
 	unsigned long   st_blksize;
 	unsigned long long  st_blocks;  /* Number 512-byte blocks allocated. */
-	
+
 	struct timespec st_atim;
 	struct timespec st_mtim;
 	struct timespec st_ctim;

@@ -1,6 +1,6 @@
 #include "ldso.h"
 
-unsigned long 
+unsigned long
 _dl_linux_resolver(struct elf_resolve *tpnt, int reloc_entry)
 {
     ELF_RELOC *this_reloc;
@@ -11,7 +11,7 @@ _dl_linux_resolver(struct elf_resolve *tpnt, int reloc_entry)
     char *sym_name;
     char *sym_addr;
     char **reloc_addr;
-    
+
     this_reloc  = (ELF_RELOC *)tpnt->dynamic_info[DT_JMPREL];
     this_reloc += reloc_entry;
     //this_reloc = (ELF_RELOC *)(intptr_t)(rel_tab + reloc_entry);
@@ -20,41 +20,40 @@ _dl_linux_resolver(struct elf_resolve *tpnt, int reloc_entry)
     sym_tab = (Elf32_Sym *)(intptr_t)tpnt->dynamic_info[DT_SYMTAB];
     str_tab = (char *)tpnt->dynamic_info[DT_STRTAB];
     sym_name = str_tab + sym_tab[symtab_index].st_name;
-    
-    reloc_addr = (char **)((unsigned long)this_reloc->r_offset + 
+
+    reloc_addr = (char **)((unsigned long)this_reloc->r_offset +
                      (unsigned long)tpnt->loadaddr);
 
     sym_addr = _dl_find_hash(sym_name, &_dl_loaded_modules->symbol_scope, tpnt, ELF_RTYPE_CLASS_PLT, NULL);
-    
+
     if (unlikely(!sym_addr)) {
         _dl_dprintf(2, "%s: 1can't resolve symbol '%s' in lib '%s'.\n", _dl_progname, sym_name, tpnt->libname);
         _dl_exit(1);
     }
-    
+
     *reloc_addr = sym_addr;
-   
-    return (unsigned long)sym_addr;      
-}   
+
+    return (unsigned long)sym_addr;
+}
 
 static int
 _dl_parse(struct elf_resolve *tpnt, struct r_scope_elem*scope,
       unsigned long rel_addr, unsigned long rel_size,
       int (*reloc_fnc)(struct elf_resolve *tpnt, struct r_scope_elem*scope,
                ELF_RELOC *rpnt, Elf32_Sym *symtab, char *strtab))
-{ 
+{
     unsigned int i;
     char *strtab;
     Elf32_Sym *symtab;
     ELF_RELOC *rpnt;
     int symtab_index;
- 
+
     /* Parse the relocation information. */
     rpnt = (ELF_RELOC *)(intptr_t)rel_addr;
     rel_size /= sizeof(ELF_RELOC);
- 
     symtab = (Elf32_Sym *)(intptr_t)tpnt->dynamic_info[DT_SYMTAB];
     strtab = (char *)tpnt->dynamic_info[DT_STRTAB];
-    
+
     for (i = 0; i < rel_size; i++, rpnt++) {
         int res;
 
@@ -62,16 +61,15 @@ _dl_parse(struct elf_resolve *tpnt, struct r_scope_elem*scope,
 
         debug_sym(symtab, strtab, symtab_index);
         debug_reloc(symtab, strtab, rpnt);
- 
+
         res = reloc_fnc(tpnt, scope, rpnt, symtab, strtab);
         if (res == 0)
             continue;
         _dl_dprintf(2, "\n%s: ", _dl_progname);
- 
+
         if (symtab_index)
             _dl_dprintf(2, "symbol '%s': ",
                     strtab + symtab[symtab_index].st_name);
- 
         if (unlikely(res < 0)) {
             int reloc_type = ELF32_R_TYPE(rpnt->r_info);
 
@@ -95,7 +93,7 @@ _dl_parse(struct elf_resolve *tpnt, struct r_scope_elem*scope,
 static int
 _dl_do_reloc(struct elf_resolve *tpnt, struct r_scope_elem *scope,
          ELF_RELOC *rpnt, Elf32_Sym *symtab, char *strtab)
-{ 
+{
     int reloc_type;
     int symtab_index;
     char *symname;
@@ -127,11 +125,9 @@ _dl_do_reloc(struct elf_resolve *tpnt, struct r_scope_elem *scope,
     sym_ref.sym = &symtab[symtab_index];
     sym_ref.tpnt = NULL;
     symname = strtab + symtab[symtab_index].st_name;
-    
     if (symtab_index) {
         symbol_addr = (unsigned long)_dl_find_hash(symname, scope, tpnt,
                                elf_machine_type_class(reloc_type), &sym_ref);
-    
     /*
          * We want to allow undefined references to weak symbols - this
          * might have been intentional.  We should not be linking local
@@ -139,7 +135,7 @@ _dl_do_reloc(struct elf_resolve *tpnt, struct r_scope_elem *scope,
          */
       //  if (unlikely(!symbol_addr && ELF32_ST_BIND(symtab[symtab_index].st_info) != STB_WEAK))
 		if (!symbol_addr && (ELF_ST_TYPE(symtab[symtab_index].st_info) != STT_TLS)
-			&& (ELF_ST_BIND(symtab[symtab_index].st_info) != STB_WEAK)) 
+			&& (ELF_ST_BIND(symtab[symtab_index].st_info) != STB_WEAK))
             return 1;
 #if defined USE_TLS && USE_TLS
 		tls_tpnt = sym_ref.tpnt;
@@ -293,7 +289,7 @@ _dl_parse_lazy_relocation_information(struct dyn_elf *rpnt,
 
 int
 _dl_parse_relocation_information(struct dyn_elf *rpnt,
-                 struct r_scope_elem *scope, 
+                 struct r_scope_elem *scope,
                  unsigned long rel_addr,
                  unsigned long rel_size)
 {

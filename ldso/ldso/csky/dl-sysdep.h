@@ -21,7 +21,7 @@ extern unsigned long _dl_linux_resolver(struct elf_resolve * tpnt, int reloc_ent
 
 /* 65536 bytes alignment */
 #define PAGE_ALIGN 0xfffff000          /* need modify */
-#define ADDR_ALIGN 0xfff           
+#define ADDR_ALIGN 0xfff
 #define OFFS_ALIGN 0x7ffff000
 
 /* ELF_RTYPE_CLASS_PLT iff TYPE describes relocation of a PLT entry or
@@ -46,7 +46,7 @@ elf_machine_dynamic (void)
     return *got;
 }
 
-/* this funtion will be called only when the auxvt[AT_BASE].a_un.a_val == 0 
+/* this funtion will be called only when the auxvt[AT_BASE].a_un.a_val == 0
    so it normal not be called, we should define a default address of the interprrter load */
 static __inline__ Elf32_Addr elf_machine_load_address (void) attribute_unused;
 static __inline__ Elf32_Addr

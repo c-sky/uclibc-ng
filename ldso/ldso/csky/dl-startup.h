@@ -14,7 +14,7 @@ __asm__ (
     "    add gb, gb,t0\n\t"
     "    lrw r5, _dl_skip_args@GOT\n\t"
     "    ldr.w r5, (gb, r5 << 0)\n\t"
-    "    # get the value of variable _dl_skip_args in r6\n\t" 
+    "    # get the value of variable _dl_skip_args in r6\n\t"
     "    ldw r6, (r5, 0)\n\t"
     "    # get the argc in r7 \n\t"
     "    ldw r7, (sp, 0)\n\t"
@@ -29,7 +29,7 @@ __asm__ (
     "    stw  r7, (sp, 0)\n\t"
     "    lrw  r7, _dl_fini@GOTOFF\n\t"
     "    addu  r7, gb\n\t"
-    "    jmp a0" 
+    "    jmp a0"
 );
 #else
 __asm__ (
@@ -62,7 +62,7 @@ __asm__ (
     "    add r4, r3\n\t"
     "    ldw r5, (r4, 0)\n\t"
 #endif
-    "    # get the value of variable _dl_skip_args in r6\n\t" 
+    "    # get the value of variable _dl_skip_args in r6\n\t"
     "    ldw r6, (r5, 0)\n\t"
     "    # get the argc in r7 \n\t"
     "    ldw r7, (r0, 0)\n\t"
@@ -77,7 +77,7 @@ __asm__ (
     "    stw  r7, (r0, 0)\n\t"
     "    lrw  r7, _dl_fini@GOTOFF\n\t"
     "    addu  r7, r3\n\t"
-    "    jmp r2" 
+    "    jmp r2"
 );
 
 #endif

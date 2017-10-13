@@ -132,7 +132,7 @@ Wstrcpy:
         stw     r5, (r6)
 #endif
        5:
-        jmp     r15    
+        jmp     r15
 
 
 libc_hidden_def(Wstrcpy)
