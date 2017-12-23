@@ -26,7 +26,7 @@ struct statfs
     long int f_type;
 #define f_fstyp f_type
     long int f_bsize;
-    long int f_frsize;	/* Fragment size - unsupported */
+    long int f_frsize;
 #ifndef __USE_FILE_OFFSET64
     __fsblkcnt_t f_blocks;
     __fsblkcnt_t f_bfree;
@@ -44,7 +44,8 @@ struct statfs
 	/* Linux specials */
     __fsid_t f_fsid;
     long int f_namelen;
-    long int f_spare[6];
+    long int f_flags;
+    long int f_spare[5];
   };
 
 #ifdef __USE_LARGEFILE64
@@ -53,7 +54,7 @@ struct statfs64
     long int f_type;
 #define f_fstyp f_type
     long int f_bsize;
-    long int f_frsize;	/* Fragment size - unsupported */
+    long int f_frsize;
     __fsblkcnt64_t f_blocks;
     __fsblkcnt64_t f_bfree;
     __fsblkcnt64_t f_files;
@@ -63,9 +64,11 @@ struct statfs64
 	/* Linux specials */
     __fsid_t f_fsid;
     long int f_namelen;
-    long int f_spare[6];
+    long int f_flags;
+    long int f_spare[5];
   };
 #endif
 
 /* Tell code we have these members.  */
 #define _STATFS_F_NAMELEN
+#define _STATFS_F_FRSIZE
