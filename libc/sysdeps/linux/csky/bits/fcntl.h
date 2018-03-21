@@ -33,15 +33,15 @@
 #define O_ASYNC		 020000
 
 #ifdef __USE_XOPEN2K8
-# define O_DIRECTORY	 040000	/* Must be a directory.	 */
-# define O_NOFOLLOW	0100000	/* Do not follow links.	 */
-# define O_CLOEXEC     02000000 /* Set close_on_exec.  */
+#define O_DIRECTORY	00200000	/* must be a directory */
+#define O_NOFOLLOW	00400000	/* don't follow links */
+#define O_CLOEXEC	02000000	/* set close_on_exec */
 #endif
 
 #ifdef __USE_GNU
-# define O_DIRECT	0200000	/* Direct disk access.	*/
-# define O_NOATIME     01000000 /* Do not set atime.  */
-# define O_PATH       010000000 /* Resolve pathname but do not open file.  */
+#define O_DIRECT	00040000	/* direct disk access hint */
+#define O_NOATIME	01000000
+#define O_PATH		010000000
 #endif
 
 /* For now Linux has synchronisity options for data and read operations.
@@ -53,7 +53,7 @@
 #endif
 
 #ifdef __USE_LARGEFILE64
-# define O_LARGEFILE	0400000
+#define O_LARGEFILE	00100000
 #endif
 
 /* Values for the second argument to `fcntl'.  */
