@@ -12,11 +12,15 @@
 ENTRY(_init)
 	subi	sp, 8
 	stw	lr, (sp, 4)
-	nop /* LD need word-align to compile into one func */
+	.literals
+	.align	4
+1:
 
 .section .fini
 ENTRY(_fini)
 	subi	sp, 8
 	stw	lr, (sp, 4)
-	nop
-
+	br	1f
+	.literals
+	.align	4
+1:
