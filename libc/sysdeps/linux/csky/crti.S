@@ -12,6 +12,7 @@
 ENTRY(_init)
 	subi	sp, 8
 	stw	lr, (sp, 4)
+	br	1f
 	.literals
 	.align	4
 1:
