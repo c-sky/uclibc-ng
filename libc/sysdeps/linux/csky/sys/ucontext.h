@@ -13,4 +13,6 @@
 #include <bits/sigcontext.h>
 #include <asm/ucontext.h>
 
+typedef struct ucontext ucontext_t;
+
 #endif /* sys/ucontext.h */
