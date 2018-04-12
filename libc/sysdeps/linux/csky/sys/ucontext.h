@@ -11,5 +11,6 @@
 #include <features.h>
 #include <signal.h>
 #include <bits/sigcontext.h>
+#include <asm/ucontext.h>
 
 #endif /* sys/ucontext.h */
