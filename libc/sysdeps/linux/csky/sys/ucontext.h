@@ -11,7 +11,7 @@
 #include <features.h>
 #include <signal.h>
 #include <bits/sigcontext.h>
-#include <asm/ucontext.h>
+#include <asm-generic/ucontext.h>
 
 typedef struct ucontext ucontext_t;
 
