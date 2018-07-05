@@ -65,10 +65,6 @@ extern struct link_map *_dl_update_slotinfo(unsigned long int req_modid);
 /* When libdl is loaded as a shared library, we need to load in
  * and use a pile of symbols from ldso... */
 #include <dl-elf.h>
-#if 0
-extern int _dl_fixup(struct dyn_elf *rpnt, struct r_scope_elem *scope, int lazy);
-extern void _dl_protect_relro(struct elf_resolve * tpnt);
-#endif
 extern int _dl_errno;
 extern struct dyn_elf *_dl_symbol_tables;
 extern struct dyn_elf *_dl_handles;
@@ -119,7 +115,6 @@ struct r_debug *_dl_debug_addr = NULL;
 
 #include "../ldso/dl-array.c"
 #include "../ldso/dl-debug.c"
-
 
 # if defined(USE_TLS) && USE_TLS
 /*
@@ -267,19 +262,6 @@ remove_slotinfo(size_t idx, struct dtv_slotinfo_list *listp, size_t disp,
 
 	/* No non-entry in this list element.  */
 	return false;
-}
-#endif
-
-#ifndef __LDSO_NO_CLEANUP__
-void dl_cleanup(void) attribute_hidden __attribute__ ((destructor));
-void dl_cleanup(void)
-{
-	struct dyn_elf *h, *n;
-
-	for (h = _dl_handles; h; h = n) {
-		n = h->next_handle;
-		do_dlclose(h, 1);
-	}
 }
 #endif
 
@@ -641,13 +623,21 @@ static void *do_dlopen(const char *libname, int flag, ElfW(Addr) from)
 			void (*dl_elf_func) (void);
 			dl_elf_func = (void (*)(void)) DL_RELOC_ADDR(tpnt->loadaddr, tpnt->dynamic_info[DT_INIT]);
 			if (dl_elf_func) {
-				_dl_if_debug_print("running ctors for library %s at '%p'\n",
+				_dl_if_debug_print("running old-style ctors for library %s at '%p'\n",
 						tpnt->libname, dl_elf_func);
 				DL_CALL_FUNC_AT_ADDR (dl_elf_func, tpnt->loadaddr, (void(*)(void)));
 			}
 		}
 
-		_dl_run_init_array(tpnt);
+		if (tpnt->dynamic_info[DT_INIT_ARRAY]) {
+			void (*dl_elf_func) (void);
+			dl_elf_func = (void (*)(void)) DL_RELOC_ADDR(tpnt->loadaddr, tpnt->dynamic_info[DT_INIT_ARRAY]);
+			if (dl_elf_func) {
+				_dl_if_debug_print("running ctors for library %s at '%p'\n",
+						tpnt->libname, dl_elf_func);
+				_dl_run_init_array(tpnt);
+			}
+		}
 	}
 
 	_dl_unmap_cache();
@@ -774,13 +764,6 @@ void *dlsym(void *vhandle, const char *name)
 	return ret;
 }
 
-#if 0
-void *dlvsym(void *vhandle, const char *name, const char *version)
-{
-	return dlsym(vhandle, name);
-}
-#endif
-
 static int do_dlclose(void *vhandle, int need_fini)
 {
 	struct dyn_elf *rpnt, *rpnt1, *rpnt1_tmp;
@@ -790,7 +773,7 @@ static int do_dlclose(void *vhandle, int need_fini)
 	int (*dl_elf_fini) (void);
 	void (*dl_brk) (void);
 	struct dyn_elf *handle;
-	unsigned int end;
+	ElfW(Addr) end = 0, start = (ElfW(Addr))(~0ULL);
 	unsigned int i, j;
 	struct r_scope_elem *ls, *ls_next = NULL;
 	struct elf_resolve **handle_rlist;
@@ -851,22 +834,35 @@ static int do_dlclose(void *vhandle, int need_fini)
 			 && !(tpnt->init_flag & FINI_FUNCS_CALLED)
 			) {
 				tpnt->init_flag |= FINI_FUNCS_CALLED;
-				_dl_run_fini_array(tpnt);
+
+				if (tpnt->dynamic_info[DT_FINI_ARRAY]) {
+					dl_elf_fini = (int (*)(void)) DL_RELOC_ADDR(tpnt->loadaddr, tpnt->dynamic_info[DT_FINI_ARRAY]);
+					_dl_if_debug_print("running dtors for library %s at '%p'\n",
+							tpnt->libname, dl_elf_fini);
+					_dl_run_fini_array(tpnt);
+				}
 
 				if (tpnt->dynamic_info[DT_FINI]) {
 					dl_elf_fini = (int (*)(void)) DL_RELOC_ADDR(tpnt->loadaddr, tpnt->dynamic_info[DT_FINI]);
-					_dl_if_debug_print("running dtors for library %s at '%p'\n",
+					_dl_if_debug_print("running old-style dtors for library %s at '%p'\n",
 							tpnt->libname, dl_elf_fini);
 					DL_CALL_FUNC_AT_ADDR (dl_elf_fini, tpnt->loadaddr, (int (*)(void)));
 				}
 			}
+		}
+	}
 
+	for (j = 0; j < handle->init_fini.nlist; ++j) {
+		tpnt = handle->init_fini.init_fini[j];
+		if (tpnt->usage_count == 0) {
 			_dl_if_debug_print("unmapping: %s\n", tpnt->libname);
 			end = 0;
 			for (i = 0, ppnt = tpnt->ppnt;
 					i < tpnt->n_phent; ppnt++, i++) {
 				if (ppnt->p_type != PT_LOAD)
 					continue;
+				if (ppnt->p_vaddr < start)
+					start = ppnt->p_vaddr;
 				if (end < ppnt->p_vaddr + ppnt->p_memsz)
 					end = ppnt->p_vaddr + ppnt->p_memsz;
 			}
@@ -973,7 +969,15 @@ static int do_dlclose(void *vhandle, int need_fini)
 			}
 #endif
 
-			DL_LIB_UNMAP (tpnt, end - tpnt->mapaddr);
+			end = (end + ADDR_ALIGN) & PAGE_ALIGN;
+			start = start & ~ADDR_ALIGN;
+			if (end > start) {
+				_dl_if_debug_print("unmapping: %s at %p with length: '%p' until %p\n", tpnt->libname, tpnt->mapaddr, end - start, tpnt->mapaddr + (end - start));
+				DL_LIB_UNMAP (tpnt, end - start);
+			}
+			else {
+				_dl_if_debug_print("NOT unmapping: %s at %p. start<end ('%p'<'%p')", tpnt->libname, tpnt->mapaddr, start, end);
+			}
 			/* Free elements in RTLD_LOCAL scope list */
 			for (runp = tpnt->rtld_local; runp; runp = tmp) {
 				tmp = runp->next;
@@ -1084,42 +1088,7 @@ char *dlerror(void)
 	return (char *)retval;
 }
 
-/*
- * Dump information to stderr about the current loaded modules
- */
 #ifdef __USE_GNU
-# if 0
-static const char type[][4] = { "Lib", "Exe", "Int", "Mod" };
-
-/* reimplement this, being a GNU extension it should be the same as on glibc */
-int dlinfo(void)
-{
-	struct elf_resolve *tpnt;
-	struct dyn_elf *rpnt, *hpnt;
-
-	fprintf(stderr, "List of loaded modules\n");
-	/* First start with a complete list of all of the loaded files. */
-	for (tpnt = _dl_loaded_modules; tpnt; tpnt = tpnt->next) {
-		fprintf(stderr, "\t%p %p %p %s %d %s\n",
-		        DL_LOADADDR_BASE(tpnt->loadaddr), tpnt, tpnt->symbol_scope,
-		        type[tpnt->libtype],
-		        tpnt->usage_count, tpnt->libname);
-	}
-
-	/* Next dump the module list for the application itself */
-	fprintf(stderr, "\nModules for application (%p):\n", _dl_symbol_tables);
-	for (rpnt = _dl_symbol_tables; rpnt; rpnt = rpnt->next)
-		fprintf(stderr, "\t%p %s\n", rpnt->dyn, rpnt->dyn->libname);
-
-	for (hpnt = _dl_handles; hpnt; hpnt = hpnt->next_handle) {
-		fprintf(stderr, "Modules for handle %p\n", hpnt);
-		for (rpnt = hpnt; rpnt; rpnt = rpnt->next)
-			fprintf(stderr, "\t%p %s\n", rpnt->dyn, rpnt->dyn->libname);
-	}
-	return 0;
-}
-#endif
-
 static int do_dladdr(const void *__address, Dl_info * __info)
 {
 	struct elf_resolve *pelf;
