@@ -4,7 +4,9 @@
  * Licensed under the LGPL v2.1 or later, see the file COPYING.LIB
  * in this tarball.
  */
-
+ 
+ #include "macro.S"
+ 
 #ifdef WANT_WIDE
 # define Wmemcpy wmemcpy
 #else
