@@ -5,6 +5,7 @@
  * in this tarball.
  */
 
+#include <features.h>
 #include <endian.h>
 #include "macro.S"
 

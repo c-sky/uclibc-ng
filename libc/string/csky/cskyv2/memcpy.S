@@ -4,6 +4,7 @@
  * Licensed under the LGPL v2.1 or later, see the file COPYING.LIB
  * in this tarball.
  */
+#include <features.h>
 
 .macro      GET_FRONT_BITS rx ry
 #ifdef      __cskyLE__

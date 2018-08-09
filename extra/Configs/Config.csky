@@ -9,3 +9,19 @@ config FORCE_OPTIONS_FOR_ARCH
 	select ARCH_USE_MMU
 	select ARCH_HAS_MMU
 
+choice
+	prompt "ABI version"
+	default CONFIG_CSKY_ABIV2
+
+config CSKY_ABIV1
+	bool "abiv1 (ck610)"
+
+config CSKY_ABIV2
+	bool "abiv2 (ck8xx)"
+endchoice
+
+config TARGET_SUBARCH
+	string
+	default "cskyv1" if CSKY_ABIV1
+	default "cskyv2" if CSKY_ABIV2
+
