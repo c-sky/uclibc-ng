@@ -111,7 +111,7 @@ memcmp:
         bnez    r0, .L_return
 
         /* check byte 3 */
-        xtrb3   r0, r20
+	xtrb3   r0, r20
         xtrb3   r2, r21
         subu    r0, r2
 # else
