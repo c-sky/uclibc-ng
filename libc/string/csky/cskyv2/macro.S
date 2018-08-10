@@ -18,8 +18,8 @@ cmpne \rx, \ry
 bt    \label
 .endm
 
-#if defined (__CK860__)
 #define NOP_INS 0x6c03
+#if defined (__CK860__)
 #define LABLE_ALIGN \
 	.balignw 16, NOP_INS
 
