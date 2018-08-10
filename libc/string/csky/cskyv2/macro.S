@@ -18,3 +18,22 @@
 	bt    \label
 .endm
 
+#if defined (__CK860__)
+/* Insert nop instruction to make label aligned.  */
+#define LABLE_ALIGN	\
+	.balignw 16, 0x6c03
+
+#define PRE_BNEZAD(R)
+
+#define BNEZAD(R, L)	\
+	bnezad	R, L
+#else
+#define LABLE_ALIGN	\
+	.balignw 8, 0x6c03
+
+#define PRE_BNEZAD(R)	\
+	subi	R, 1
+
+#define BNEZAD(R, L)	\
+	bnez	R, L
+#endif

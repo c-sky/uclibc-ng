@@ -4,173 +4,174 @@
  * Licensed under the LGPL v2.1 or later, see the file COPYING.LIB
  * in this tarball.
  */
-
 #include <features.h>
-#include <endian.h>
 #include "macro.S"
 
-#ifdef WANT_WIDE
-# define Wstrcmp wcscmp
-# define Wstrcoll wcscoll
-#else
-# define Wstrcmp strcmp
-# define Wstrcoll strcoll
-#endif
+	.text
+	.global strcmp
+	.type strcmp,%function
+	.align 4
+strcmp:
+	mov	a3, a0
+	/* Check if the s1 addr is aligned.  */
+	xor	a2, a3, a1
+	andi	a2, 0x3
+        bnez	a2, 7f
+	andi	t1, a0, 0x3
+	bnez	t1, 5f
 
-/* FIXME attention!!! it may be a bug when WANT_WIDE define */
-/*libc_hidden_proto(Wstrcmp)*/
-	.align 2
-	.global Wstrcmp
-	.type   Wstrcmp, @function
-Wstrcmp:
-    mov        a3, a0
+1:
+	/* If aligned, load word each time.  */
+	ldw	t0, (a3, 0)
+	ldw	t1, (a1, 0)
+	/* If s1[i] != s2[i], goto 2f.  */
+        cmpne   t0, t1
+        bt      2f
+	/* If s1[i] == s2[i], check if s1 or s2 is at the end.  */
+	tstnbz	t0
+	/* If at the end, goto 3f (finish comparing).  */
+	bf	3f
 
-    or         a0, a1
-    andi       a0, 0x3
-    M_BNEZ     a0, 4f
-    1:                   // if aligned, load word each time.
+	ldw	t0, (a3, 4)
+	ldw	t1, (a1, 4)
+	cmpne	t0, t1
+	bt	2f
+	tstnbz	t0
+	bf	3f
 
-    ldw        a0, (a3, 0)
-    ldw        t0, (a1, 0)
-    M_BNE      a0, t0, 1f // if d[i] != s[i], goto 1f
-    tstnbz     a0       // if d[i] == s[i], check if d or s is at the end.
-    bf         3f       // if at the end, goto 3f (finish comparing)
-    ldw        a0, (a3, 4)
-    ldw        t0, (a1, 4)
-    M_BNE      a0, t0, 1f
-    tstnbz     a0
-    bf         3f
+	ldw	t0, (a3, 8)
+	ldw	t1, (a1, 8)
+	cmpne	t0, t1
+	bt	2f
+	tstnbz	t0
+	bf	3f
 
-    ldw        a0, (a3, 8)
-    ldw        t0, (a1, 8)
-    M_BNE      a0, t0, 1f
-    tstnbz     a0
-    bf         3f
+	ldw	t0, (a3, 12)
+	ldw	t1, (a1, 12)
+	cmpne	t0, t1
+	bt	2f
+	tstnbz	t0
+	bf	3f
 
-    ldw        a0, (a3, 12)
-    ldw        t0, (a1, 12)
-    M_BNE      a0, t0, 1f
-    tstnbz     a0
-    bf         3f
+	ldw	t0, (a3, 16)
+	ldw	t1, (a1, 16)
+	cmpne	t0, t1
+	bt	2f
+	tstnbz	t0
+	bf	3f
 
-    ldw        a0, (a3, 16)
-    ldw        t0, (a1, 16)
-    M_BNE      a0, t0, 1f
-    tstnbz     a0
-    bf         3f
+	ldw	t0, (a3, 20)
+	ldw	t1, (a1, 20)
+	cmpne	t0, t1
+	bt	2f
+	tstnbz	t0
+	bf	3f
 
-    ldw        a0, (a3, 20)
-    ldw        t0, (a1, 20)
-    M_BNE      a0, t0, 1f
-    tstnbz     a0
-    bf         3f
+	ldw	t0, (a3, 24)
+	ldw	t1, (a1, 24)
+	cmpne	t0, t1
+	bt	2f
+	tstnbz	t0
+	bf	3f
 
-    ldw        a0, (a3, 24)
-    ldw        t0, (a1, 24)
-    M_BNE      a0, t0, 1f
-    tstnbz     a0
-    bf         3f
+	ldw	t0, (a3, 28)
+	ldw	t1, (a1, 28)
+	cmpne	t0, t1
+	bt	2f
+	tstnbz	t0
+	bf	3f
 
-    ldw        a0, (a3, 28)
-    ldw        t0, (a1, 28)
-    M_BNE      a0, t0, 1f
-    tstnbz     a0
-    bf         3f
+	addi	a3, 32
+	addi	a1, 32
 
-    addi       a3, 32
-    addi       a1, 32
-    br         1b
+	br	1b
 
-#ifdef __CSKYBE__
-    /* d[i] != s[i] in word, so we check byte 0 ? */
-    1:
-    xtrb0      t1, a0
-    mov        a2, t1
-    xtrb0      t1, t0
-    M_BNE      a2, t1, 2f
-    cmpnei     a2, 0
-    bf         2f
+# ifdef __CSKYBE__
+	/* d[i] != s[i] in word, so we check byte 0.  */
+2:
+        xtrb0   a0, t0
+        xtrb0   a2, t1
+        subu    a0, a2
+        bez     a2, 4f
+        bnez    a0, 4f
 
-    /* d[i] != s[i] in word, so we check byte 1 ? */
-    xtrb1      t1, a0
-    mov        a2, t1
-    xtrb1      t1, t0
-    M_BNE      a2, t1, 2f
-    cmpnei     a2, 0
-    bf         2f
+        /* check byte 1 */
+        xtrb1   a0, t0
+        xtrb1   a2, t1
+        subu    a0, a2
+        bez     a2, 4f
+        bnez    a0, 4f
 
-    /* d[i] != s[i] in word, so we check byte 1 ? */
-    xtrb2      t1, a0
-    mov        a2, t1
-    xtrb2      t1, t0
-    M_BNE      a2, t1, 2f
-    cmpnei     a2, 0
-    bf         2f
+        /* check byte 2 */
+        xtrb2   a0, t0
+        xtrb2   a2, t1
+        subu    a0, a2
+        bez     a2, 4f
+        bnez    a0, 4f
 
-    /* d[i] != s[i] in word, so we check byte 1 ? */
-    xtrb3      t1, a0
-    mov        a2, t1
-    xtrb3      t1, t0
+        /* check byte 3 */
+        xtrb3   a0, t0
+        xtrb3   a2, t1
+        subu    a0, a2
+# else
+	/* s1[i] != s2[i] in word, so we check byte 3.  */
+2:
+	xtrb3	a0, t0
+	xtrb3	a2, t1
+        subu    a0, a2
+        bez     a2, 4f
+        bnez    a0, 4f
 
-#else /* little endian */
-    /* d[i] != s[i] in word, so we check byte 0 ? */
-    1:
-    xtrb3      t1, a0
-    mov        a2, t1
-    xtrb3      t1, t0
-    M_BNE      a2, t1, 2f
-    cmpnei     a2, 0
-    bf         2f
+	/* check byte 2 */
+	xtrb2	a0, t0
+	xtrb2	a2, t1
+        subu    a0, a2
+        bez     a2, 4f
+        bnez    a0, 4f
 
-    /* d[i] != s[i] in word, so we check byte 1 ? */
-    xtrb2      t1, a0
-    mov        a2, t1
-    xtrb2      t1, t0
-    M_BNE      a2, t1, 2f
-    cmpnei     a2, 0
-    bf         2f
+	/* check byte 1 */
+	xtrb1	a0, t0
+	xtrb1	a2, t1
+	subu	a0, a2
+	bez	a2, 4f
+	bnez    a0, 4f
 
-    /* d[i] != s[i] in word, so we check byte 1 ? */
-    xtrb1      t1, a0
-    mov        a2, t1
-    xtrb1      t1, t0
-    M_BNE      a2, t1, 2f
-    cmpnei     a2, 0
-    bf         2f
+	/* check byte 0 */
+	xtrb0	a0, t0
+	xtrb0	a2, t1
+	subu	a0, a2
 
-    /* d[i] != s[i] in word, so we check byte 1 ? */
-    xtrb0      t1, a0
-    mov        a2, t1
-    xtrb0      t1, t0
+# endif /* !__CSKYBE__ */
+        jmp     lr
+3:
+	movi	a0, 0
+4:
+        jmp     lr
 
-#endif
-    /* get the result when d[i] != s[i] */
-    2:
-    subu       a2, t1
-    mov        a0, a2
-    jmp        r15
+	/* Compare when s1 or s2 is not aligned.  */
+5:
+        subi    t1, 4
+6:
+	ldb	a0, (a3, 0)
+	ldb	a2, (a1, 0)
+	subu	a0, a2
+	bez	a2, 4b
+	bnez	a0, 4b
+	addi    t1, 1
+	addi	a1, 1
+	addi	a3, 1
+	bnez	t1, 6b
+	br	1b
 
-    /* return when d[i] == s[i] */
-    3:
-    subu       a0, t0
-    jmp        r15
+7:
+ 	ldb	a0, (a3, 0)
+ 	addi	a3, 1
+	ldb	a2, (a1, 0)
+ 	addi	a1, 1
+	subu    a0, a2
+	bnez    a0, 4b
+	bnez	a2, 7b
+	jmp	r15
+.size strcmp,.-strcmp
 
-     /* cmp when d or s is not aligned */
-    4:
-    ldb       a0, (a3,0)
-    ldb       t0, (a1, 0)
-    M_BNE     a0, t0, 3b
-    addi      a1, 1
-    addi      a3, 1
-    M_BNEZ    a0, 4b
-    jmp        r15
-
-    .size   Wstrcmp, .-Wstrcmp
-
-libc_hidden_def(Wstrcmp)
-.weak Wstrcmp
-#ifndef __UCLIBC_HAS_LOCALE__
-/* libc_hidden_proto(Wstrcoll) */
-strong_alias(Wstrcmp,Wstrcoll)
-libc_hidden_def(Wstrcoll)
-#endif
+libc_hidden_def(strcmp)
