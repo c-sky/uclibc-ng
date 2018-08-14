@@ -7,10 +7,9 @@
 #include <features.h>
 #include "macro.S"
 
-	.text
+	.align 2
 	.global strcmp
-	.type strcmp,%function
-	.align 4
+	.type   strcmp, @function
 strcmp:
 	mov	a3, a0
 	/* Check if the s1 addr is aligned.  */
@@ -172,6 +171,13 @@ strcmp:
 	bnez    a0, 4b
 	bnez	a2, 7b
 	jmp	r15
-.size strcmp,.-strcmp
+
+	.size   strcmp, .-strcmp
 
 libc_hidden_def(strcmp)
+.weak strcmp
+
+#ifndef __UCLIBC_HAS_LOCALE__
+strong_alias(strcmp,strcoll)
+libc_hidden_def(strcoll)
+#endif

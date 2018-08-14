@@ -4,22 +4,15 @@
  * Licensed under the LGPL v2.1 or later, see the file COPYING.LIB
  * in this tarball.
  */
+
 #include <features.h>
 #include "macro.S"
 
-#ifdef WANT_WIDE
-# define Wmemcpy wmemcpy
-#else
-# define Wmemcpy memcpy
-#endif
-
-/* void *memcpy(void *dest, const void *src, size_t n); */
-
 	.text
         .align 4
-        .global Wmemcpy
-        .type   Wmemcpy, @function
-Wmemcpy:
+        .global memcpy
+        .type   memcpy, @function
+memcpy:
 	/* Test if len less than 4 bytes.  */
 	mov	r12, r0
 	cmplti	r2, 4
@@ -116,6 +109,7 @@ Wmemcpy:
 	jbt	.L_copy_by_byte
 	/* Check whether the src is aligned.  */
 	jbr	.L_dest_aligned
-.size memcpy,.-memcpy
+
+	.size memcpy,.-memcpy
 
 libc_hidden_def(memcpy)
