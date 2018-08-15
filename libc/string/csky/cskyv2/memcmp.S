@@ -158,3 +158,6 @@ memcmp:
 .size memcmp,.-memcmp
 
 libc_hidden_def(memcmp)
+#ifdef __UCLIBC_SUSV3_LEGACY__
+strong_alias(memcmp,bcmp)
+#endif
