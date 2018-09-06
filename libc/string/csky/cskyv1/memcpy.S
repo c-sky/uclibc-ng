@@ -31,20 +31,20 @@
 memcpy:
 	mov     r7, r2
 	cmplti  r4, 4					/* If len less than 4 bytes */
-	jbt     .L_copy_by_byte
+	bt     .L_copy_by_byte
 
 	mov     r6, r2
 	andi    r6, 3
 	cmpnei  r6, 0
-	jbt     .L_dest_not_aligned			/* If dest is not 4 bytes aligned */
+	bt     .L_dest_not_aligned			/* If dest is not 4 bytes aligned */
 .L0:
 	mov     r6, r3
 	andi    r6, 3
 	cmpnei  r6, 0
-	jbt     .L_dest_aligned_but_src_not_aligned     /* If dest is aligned, but src is not aligned */
+	bt     .L_dest_aligned_but_src_not_aligned     /* If dest is aligned, but src is not aligned */
 
 	cmplti  r4, 16                                  /* dest and src are all aligned */
-	jbt     .L_aligned_and_len_less_16bytes         /* If len less than 16 bytes */
+	bt     .L_aligned_and_len_less_16bytes         /* If len less than 16 bytes */
 
 	subi    sp, 8
 	stw     r8, (sp, 0)
@@ -62,30 +62,30 @@ memcpy:
 	addi    r3, 16
 	addi    r7, 16
 	cmplti  r4, 16
-	jbf     .L_aligned_and_len_larger_16bytes
+	bf     .L_aligned_and_len_larger_16bytes
 	ldw     r8, (sp, 0)
 	ldw     r9, (sp, 4)
 	addi    sp, 8
 
 .L_aligned_and_len_less_16bytes:
 	cmplti  r4, 4
-	jbt     .L_copy_by_byte
+	bt     .L_copy_by_byte
 	ldw     r1, (r3, 0)
 	stw     r1, (r7, 0)
 	subi    r4, 4
 	addi    r3, 4
 	addi    r7, 4
-	jbr     .L_aligned_and_len_less_16bytes
+	br     .L_aligned_and_len_less_16bytes
 
 .L_copy_by_byte:				/* len less than 4 bytes */
 	cmpnei  r4, 0
-	jbf     .L_return
+	bf     .L_return
 	ldb     r1, (r3, 0)
 	stb     r1, (r7, 0)
 	subi    r4, 1
 	addi    r3, 1
 	addi    r7, 1
-	jbr     .L_copy_by_byte
+	br     .L_copy_by_byte
 
 .L_return:
 	rts
@@ -99,7 +99,7 @@ memcpy:
 	rsub    r5, r5, r7
 	abs     r5, r5
 	cmplt   r5, r4
-	jbt     .L_copy_by_byte
+	bt     .L_copy_by_byte
 
 .L1:
 	ldb     r1, (r3, 0)			/* makes the dest align. */
@@ -109,17 +109,17 @@ memcpy:
 	addi    r3, 1
 	addi    r7, 1
 	cmpnei  r6, 4
-	jbt     .L1
+	bt     .L1
 	cmplti  r4, 4
-	jbt     .L_copy_by_byte
-	jbf     .L0				/* judge whether the src is aligned. */
+	bt     .L_copy_by_byte
+	bf     .L0				/* judge whether the src is aligned. */
 
 .L_dest_aligned_but_src_not_aligned:
 	mov     r5, r3				/* consider overlapped case*/
 	rsub    r5, r5, r7
 	abs     r5, r5
 	cmplt   r5, r4
-	jbt     .L_copy_by_byte
+	bt     .L_copy_by_byte
 
 	bclri   r3, 0
 	bclri   r3, 1
@@ -138,7 +138,7 @@ memcpy:
 	mov     r13, r5
 
 	cmplti  r4, 16
-	jbt     .L_not_aligned_and_len_less_16bytes
+	bt     .L_not_aligned_and_len_less_16bytes
 
 	stw     r8, (sp, 12)
 	subi    sp, 8
@@ -178,7 +178,7 @@ memcpy:
 	addi    r3, 16
 	addi    r7, 16
 	cmplti  r4, 16
-	jbf     .L_not_aligned_and_len_larger_16bytes
+	bf     .L_not_aligned_and_len_larger_16bytes
 	ldw     r9, (sp, 0)
 	ldw     r10, (sp, 4)
 	addi    sp, 8
@@ -186,14 +186,14 @@ memcpy:
 
 .L_not_aligned_and_len_less_16bytes:
 	cmplti  r4, 4
-	jbf     .L2
+	bf     .L2
 	rsubi   r6, 4				/* r6 is used to stored the misaligned bits */
 	subu    r3, r6				/* initial the position */
 	ldw     r11, (sp, 0)
 	ldw     r12, (sp, 4)
 	ldw     r13, (sp, 8)
 	addi    sp, 16
-	jbr     .L_copy_by_byte
+	br     .L_copy_by_byte
 .L2:
 	ldw     r5, (r3, 0)
 	GET_FRONT_BITS r1 r12
@@ -205,7 +205,7 @@ memcpy:
 	subi    r4, 4
 	addi    r3, 4
 	addi    r7, 4
-	jbr     .L_not_aligned_and_len_less_16bytes
+	br     .L_not_aligned_and_len_less_16bytes
 
 	.size   memcpy, .-memcpy
 

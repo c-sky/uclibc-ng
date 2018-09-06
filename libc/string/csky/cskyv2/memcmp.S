@@ -17,7 +17,7 @@ memcmp:
 	movi	r0, 0
 	mov	r12, r4
 	cmplti	r2, 4
-	jbt	.L_compare_by_byte
+	bt	.L_compare_by_byte
 
 	andi	r13, r0, 3
 	movi	r19, 4

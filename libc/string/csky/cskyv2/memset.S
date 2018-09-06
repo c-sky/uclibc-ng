@@ -15,7 +15,7 @@ memset:
 	/* Test if len less than 4 bytes.  */
 	mov	r12, r0
 	cmplti	r2, 8
-	jbt	.L_set_by_byte
+	bt	.L_set_by_byte
 
 	andi	r13, r0, 3
 	movi	r19, 4
@@ -81,9 +81,9 @@ memset:
 	addi	r0, 1
 	BNEZAD (r13, .L_dest_not_aligned_loop)
 	cmplti	r2, 8
-	jbt	.L_set_by_byte
+	bt	.L_set_by_byte
 	/* Check whether the src is aligned.  */
-	jbr	.L_dest_aligned
+	br	.L_dest_aligned
 .size memset,.-memset
 
 libc_hidden_def(memset)
